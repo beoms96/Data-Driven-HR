@@ -80,7 +80,7 @@ def render_content(tab):
                 id='ibx',
                 placeholder='직원번호 검색',
                 type='text',
-                value=''
+                value='6163718'
             ),
             html.Button('조회', id='btn'),
 
