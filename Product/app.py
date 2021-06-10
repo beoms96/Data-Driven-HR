@@ -43,6 +43,8 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import os
+from extra import conversions
+
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -112,7 +114,9 @@ def render_content(tab):
 @app.callback(
     dash.dependencies.Output('cytoscape', 'elements'),
     [dash.dependencies.Input('btn', 'n_clicks')],
-    [dash.dependencies.State('ibx', 'value')])
+    [dash.dependencies.Input('ibx', 'n_submit')],
+    [dash.dependencies.State('ibx', 'value')]
+)
 def update_output(n_clicks, value):
     if value == "" or int(value) not in (df['JIKWON_NO'].unique()):
         return []
@@ -135,7 +139,7 @@ def update_output(n_clicks, value):
                 'data': {
                     'id': name,
                     'label': name,
-                    'url': 'url(/assets/xml.png)'
+                    'url': 'url(/assets/' + conversions.get(name, "progress") + '.png)'
                 }})
 
     # create edges
