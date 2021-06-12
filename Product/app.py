@@ -260,6 +260,16 @@ def render_content(tab):
                             children = '신한은행 기술 역량 관계도',
                             style = {
                                 'margin'        : '0px',
+                                'fontSize'     : '14px',
+                                'fontWeight'   : 'bold',
+                                'color'         : '#000'
+                            }
+                        ),
+
+                        html.H2(
+                            children = '(사용 기술스택 기반)',
+                            style = {
+                                'margin'        : '0px',
                                 'paddingBottom': '10px',
                                 'fontSize'     : '14px',
                                 'fontWeight'   : 'bold',
