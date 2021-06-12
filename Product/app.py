@@ -9,6 +9,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_cytoscape as cyto
 from dash.dependencies import Input, Output
+import dash_table
 import pandas as pd
 import os
 
@@ -22,7 +23,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets, suppress_ca
 # ################################### TAB1 ###################################
 # Get data
 root = os.path.join(os.getcwd(), './data')
-df = pd.read_csv(os.path.join(root, 'data_for_dash.csv'), index_col=0, encoding='UTF8')
+df = pd.read_csv(os.path.join(root, 'data_for_dash2.csv'), index_col=0, encoding='UTF8')
 df_jikwon = pd.read_csv(os.path.join(root, 'jikwon.csv'), index_col=0, encoding='cp949')
 elements, stylesheet = [], []
 
@@ -62,8 +63,6 @@ stylesheet.append({'selector': '.root',
                        "background-color": "#446cb3",
                        "text-outline-color": "#446cb3",
                        "font-size": 10,
-                       'position': {'x': 150, 'y': 150},
-                       'grabbable': False
                    }
                    })
 stylesheet.append({'selector': '.root:selected',
@@ -120,7 +119,9 @@ def update_output(n_clicks, n_submits, value):
     elements = []
     # -- Jikwon Node
     elements.append({'data': {'id': selected_name, 'label': selected_name, 'size': 30},
-                     'classes': 'root'
+                     'classes': 'root',
+                     'position': {'x': 150, 'y': 150},
+                     'grabbable': False
                      })
 
     # -- Program Nodes
@@ -184,11 +185,12 @@ def update_jikwon_output(n_clicks, n_submits, value):
 
 # 노드 클릭시 해당하는 프로그램 목록 표시
 @app.callback(
-    dash.dependencies.Output('program_data', 'children'),
+    dash.dependencies.Output('table', 'data'),
     [dash.dependencies.Input('btn', 'n_clicks')],
     [dash.dependencies.Input('cytoscape', 'tapNodeData')],
+    [dash.dependencies.Input('ibx', 'n_submit')],
     [dash.dependencies.State('ibx', 'value')])
-def update_program_output(n_clicks, data, value):
+def update_program_output(n_clicks, data, n_submits, value):
     ctx = dash.callback_context
     if not ctx.triggered:
         return []
@@ -202,16 +204,17 @@ def update_program_output(n_clicks, data, value):
     jikwon_program = df[df['JIKWON_NO'] == selected_jikwon]
 
     if data['label'] in (df['A'].unique()):
-        jikwon_program = jikwon_program['프로그램명'][jikwon_program['A'] == data['label']]
+        jikwon_program = jikwon_program['프로그램명', '프로그램설명'][jikwon_program['A'] == data['label']]
     elif data['label'] in (df['프로그램종류'].unique()):
-        jikwon_program = jikwon_program['프로그램명'][jikwon_program['프로그램종류'] == data['label']]
+        jikwon_program = jikwon_program['프로그램명', '프로그램설명'][jikwon_program['프로그램종류'] == data['label']]
     else:
         return []
 
     output_program = data['label'] + " 프로그램 목록 \n\n"
     for p in jikwon_program:
         output_program = output_program + p + '\n'
-    return output_program
+
+    return jikwon_program.to_dict('records')
 
 
 # ################################### TAB2 ###################################
@@ -248,7 +251,6 @@ def render_content(tab):
             children=[
                 # 직원 조회
                 html.Div([
-
                     html.Div(
                         "",
                         id="maintitle",
@@ -350,16 +352,38 @@ def render_content(tab):
                           'marginLeft': '25px',
                           'backgroundColor': 'rgba(255,255,255,0.8)',
                           'border': '1px solid #ccc',
-                          'zIndex': '20',
-                          'top': '0',
+                          'zIndex': '1',
                           'padding': '18px 18px 18px 18px',
                           }
                 ),
 
                 # 프로그램 목록
-                html.Div(className='program_data', id='program_data', children='',
-                         style={'width': '20%', 'height': '60vh', 'position': 'absolute', 'right': '5px',
-                                'whiteSpace': 'pre-line', 'overflow': 'auto', 'zIndex': '1'}),
+                html.Div(id='program_data',
+                         children=[
+                             dash_table.DataTable(
+                                 id="table",
+                                 data=[],
+                                 columns=[
+                                     {'id': '프로그램명', 'name': '프로그램명'},
+                                     {'id': '프로그램설명', 'name': '프로그램설명'}
+                                 ],
+                                 page_action='none',
+                                 style_table={'height': '100%', 'overflowY': 'auto'},
+                                 style_cell={'textAlign': 'left'},
+                             )
+                         ], className='program_data_hide',
+                         style={
+                             'position': 'absolute',
+                             'backgroundColor': 'rgba(255,255,255,0.8)',
+                             'border': '1px solid #ccc',
+                             'zIndex': '20',
+                             'right': '0',
+                             'width': '20%',
+                             'padding': '18px 0px 18px 0px',
+                             'overflow': 'auto',
+                             'whiteSpace': 'pre-line',
+                             'height': '90%',
+                         }),
 
                 # 네트워크
                 html.Div([
