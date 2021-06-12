@@ -7,11 +7,16 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from dash_html_components.H1 import H1
+from dash_html_components.Hr import Hr
+from dash_html_components.P import P
 import dash_cytoscape as cyto
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import os
+import dash_table
+from extra import conversions
 
 # ################################ STYLESHEET ################################   
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -73,18 +78,23 @@ stylesheet.append({'selector': '.root:selected',
 
 stylesheet.append({'selector': '.A',
                    'style': {
-                        "font-size": 0}
+                        "font-size": 0,
+                        'background-fit': 'cover',
+                        'background-image': 'data(url)',
+                    }
                   })
 stylesheet.append({'selector': '.A:selected',
                    'style': {
-                        "font-size": 7
-                        }
+                        "font-size": 'data(font_size)' #7
+                    }
                   })
 
 stylesheet.append({'selector': '.program',
                    'style': {
-                        "font-size": 7
-                        }
+                        "font-size": 'data(font_size)', #7,
+                        'background-fit': 'cover',
+                        'background-image': 'data(url)',
+                    }
                   })
 
 # --------------------------------- CALLBACKS --------------------------------    
@@ -92,8 +102,9 @@ stylesheet.append({'selector': '.program',
 @app.callback(
     dash.dependencies.Output('cytoscape', 'elements'),
     [dash.dependencies.Input('btn', 'n_clicks')],
+    [dash.dependencies.Input('ibx', 'n_submit')],
     [dash.dependencies.State('ibx', 'value')])
-def update_output(n_clicks, value):
+def update_output(n_clicks, n_submits, value):
     if value == "" or int(value) not in (df['JIKWON_NO'].unique()):  # 검색한 직원이 없거나 존재하지 않는 경우
         return []
 
@@ -117,14 +128,24 @@ def update_output(n_clicks, value):
     # -- Program Nodes
     data_max = max(data['A'].value_counts().max(), data['프로그램종류'].value_counts().max())
     for name in list(data['A'].unique()):
-        elements.append({'data': {'id': name, 'label': name,
-                         'size': data[data["A"] == name]["A"].count() / data_max * MAX_NODE_SIZE + MIN_NODE_SIZE},
-                         'classes': 'A'})
+        elements.append({'data': {'id': name, 
+                                  'label': name, 
+                                  'url': 'url(/assets/' + conversions.get(name, "progress") + '.png)',
+                                  'size': data[data["A"] == name]["A"].count() / data_max * MAX_NODE_SIZE + MIN_NODE_SIZE,
+                                  'font_size' : data[data["A"] == name]["A"].count() / data_max * MAX_NODE_SIZE + MIN_NODE_SIZE / 3
+                                  },
+                        'classes': 'A'
+                        })
 
     for name in list(program_edge['프로그램종류'].unique()):
-        elements.append({'data': {'id': name, 'label': name, 
-                         'size': data[data["프로그램종류"] == name]["프로그램종류"].count() / data_max * MAX_NODE_SIZE + MIN_NODE_SIZE},
-                         'classes': 'program'})
+        elements.append({'data': {'id': name, 
+                                  'label': name, 
+                                  'url': 'url(/assets/' + conversions.get(name, "progress") + '.png)',
+                                  'size': data[data["프로그램종류"] == name]["프로그램종류"].count() / data_max * MAX_NODE_SIZE + MIN_NODE_SIZE,
+                                  'font_size' : data[data["A"] == name]["A"].count() / data_max * MAX_NODE_SIZE + MIN_NODE_SIZE / 3
+                                 },
+                         'classes': 'program'
+                         })
 
     # create edges
     for t in list(data['A'].unique()):
@@ -140,8 +161,9 @@ def update_output(n_clicks, value):
 @app.callback(
     dash.dependencies.Output('jikwon', 'children'),
     [dash.dependencies.Input('btn', 'n_clicks')],
+    [dash.dependencies.Input('ibx', 'n_submit')],
     [dash.dependencies.State('ibx', 'value')])
-def update_jikwon_output(n_clicks, value):
+def update_jikwon_output(n_clicks, n_submits, value):
     if value == "" or int(value) not in (df['JIKWON_NO'].unique()):  # 검색한 직원이 없거나 존재하지 않는 경우
         return "해당하는 직원정보가 없습니다."
     
@@ -159,11 +181,12 @@ def update_jikwon_output(n_clicks, value):
 
 # 노드 클릭시 해당하는 프로그램 목록 표시
 @app.callback(
-    dash.dependencies.Output('program_data', 'children'),
+    dash.dependencies.Output('table', 'data'),
     [dash.dependencies.Input('btn', 'n_clicks')],
     [dash.dependencies.Input('cytoscape', 'tapNodeData')],
+    [dash.dependencies.Input('ibx', 'n_submit')],
     [dash.dependencies.State('ibx', 'value')])
-def update_program_output(n_clicks, data, value):
+def update_program_output(n_clicks, data, n_submits, value):
     ctx = dash.callback_context
     if not ctx.triggered:
         return []
@@ -177,17 +200,17 @@ def update_program_output(n_clicks, data, value):
     jikwon_program = df[df['JIKWON_NO'] == selected_jikwon]
 
     if data['label'] in (df['A'].unique()):
-        jikwon_program = jikwon_program['프로그램명'][jikwon_program['A'] == data['label']]
+        jikwon_program = jikwon_program[['프로그램명', '프로그램설명']][jikwon_program['A'] == data['label']]
     elif data['label'] in (df['프로그램종류'].unique()):
-        jikwon_program = jikwon_program['프로그램명'][jikwon_program['프로그램종류'] == data['label']]
+        jikwon_program = jikwon_program[['프로그램명', '프로그램설명']][jikwon_program['프로그램종류'] == data['label']]
     else:
         return []
 
     output_program = data['label'] + " 프로그램 목록 \n\n"
     for p in jikwon_program:
         output_program = output_program + p + '\n'
-    return output_program
 
+    return jikwon_program.to_dict('records')
 
 # ################################### TAB2 ###################################    
 
@@ -198,52 +221,192 @@ def update_program_output(n_clicks, data, value):
 app.layout = html.Div(children=[    
     html.H1(children='Data Driven HRM',
             style={'textAlign': 'center'}),
-    html.Div(className='column', children=[
-        dcc.Tabs(id='tabs', children=[
-            dcc.Tab(label='기술 역량 네트워크', value='tab-1', children=[
-                # 직원 조회
-                html.Div(children=[
-                    dcc.Input(
-                        id='ibx',
-                        placeholder='직원번호 검색',
-                        type='text',
-                        value=''
-                    ),
-                    html.Button('조회', id='btn'),
-                ], style={'margin': '10px'}),
-                # 직원 정보
-                html.Div(children=[
-                    html.H5(children="직원정보"),
-                    html.Div(id='jikwon', children='', style={'whiteSpace': 'pre-line'})
-                ], style={'position': 'absolute', 'z-index': '1'}),
-                # 프로그램 목록
-                html.Div(className='program_data', id='program_data', children='',
-                        style={'width': '20%', 'height': '60vh', 'position': 'absolute', 'right': '5px',
-                                'whiteSpace': 'pre-line', 'overflow': 'auto', 'z-index': '1'}),
-                #네트워크
-                html.Div([
-                    cyto.Cytoscape(
-                        id='cytoscape',
-                        elements=elements,
-                        layout={'name': 'cose',
-                            'idealEdgeLength': 30,
-                            'nodeRepulsion': 1000,
-                            'nodeOverlap': 30,
-                            'padding': 30,
-                            'componentSpacing': 100,
-                                },
-                        style={'width': '90%', 'height': '75vh', 'position': 'relative'},
-                        stylesheet=stylesheet
-                        )
-                ]),
-            ]),
 
-            dcc.Tab(label='업무 역량 네트워크', value='tab-2', children=[])
-        ])
+    dcc.Tabs(id='tabs', children=[
+        dcc.Tab(label='기술 역량 네트워크', value='tab-1', children=[]),
+        dcc.Tab(label='업무 역량 네트워크', value='tab-2', children=[])
     ]),
+
+    html.Div(id='tabs-content'),
 ])
 
 # --------------------------------- CALLBACKS --------------------------------    
+@app.callback(Output('tabs-content', 'children'),
+              Input('tabs', 'value'))
+def render_content(tab):
+    if tab == 'tab-1':
+        return html.Div(
+                style={'backgroundColor': '#eee',
+                       'border'         : '1px solid #ccc',
+                       'position'       : 'relative',
+                       'fontFamily'     : 'sans-serif',
+                       'fontSize'       : '12px',
+                       'lineHeight'     : '1.25em',
+                },
+                children = [
+                    # 직원 조회
+                    html.Div([
+
+                        html.Div(
+                            "",
+                            id = "maintitle",
+                            style={
+                                'width' : '100%',
+                                'height': '72px',
+                                'backgroundRepeat': 'no-repeat',
+                                'marginBottom'   : '20px',
+                            }
+                        ),
+
+                        html.H2(
+                            children = '신한은행 기술 역량 관계도',
+                            style = {
+                                'margin'        : '0px',
+                                'fontSize'     : '14px',
+                                'fontWeight'   : 'bold',
+                                'color'         : '#000'
+                            }
+                        ),
+
+                        html.H2(
+                            children = '(사용 기술스택 기반)',
+                            style = {
+                                'margin'        : '0px',
+                                'paddingBottom': '10px',
+                                'fontSize'     : '14px',
+                                'fontWeight'   : 'bold',
+                                'color'         : '#000'
+                            }
+                        ),
+                        
+                        html.Div(
+                            '당행 IT 인력들의 역량 기반 개인 네트워크',
+                            style = {
+                                'padding' : '6px 0 10px 0',
+                                'color'   : '#000'
+                            }
+                        ),
+
+                        # 직원 정보
+                        html.Div([
+                            html.H2(
+                                children = "직원정보",
+                                style = {
+                                'margin'        : '0px',
+                                'paddingBottom': '10px',
+                                'fontSize'     : '14px',
+                                'fontWeight'   : 'bold',
+                                'color'         : '#000'
+                                }
+                            ),
+
+                            html.Div(id='jikwon', 
+                                children='', 
+                                style={'whiteSpace': 'pre-line',
+                                        'paddingBottom': '10px',
+                                })
+                            
+                        ]),
+
+                        html.Div([
+                                
+                                html.H2(
+                                    children = 'Search : ',
+                                    style = {
+                                        'margin'         : '0px',
+                                        'paddingBottom': '10px',
+                                        'fontSize'     : '14px',
+                                        'fontWeight'   : 'bold',
+                                        'color'   : '#000'
+                                    }
+                                ),
+
+                                dcc.Input(
+                                    id='ibx',
+                                    placeholder='Search by name',
+                                    type='text',
+                                    value='6163718',
+                                    style={'border' : '1px solid #999',
+                                            'borderRadius' : '0px',
+                                            'backgroundColor': '#fff',
+                                            'padding' : '5px 7px 4px 7px',
+                                            'width'   : '205px',
+                                            'height'  : '26px',
+                                            'color'   : '#000'
+                                    }
+                                ),
+
+                                html.Button( '조회', id='btn', style={"display" : "none"}),
+                            ],
+                            style = {"borderTop" : "1px solid #999",
+                                    "padding"    : "20px 0 0px 2px"
+                            }
+                        )
+                    ], style={'width'      : 'fit-content',
+                              'position'   : 'absolute',
+                              'marginTop'  : '50px',
+                              'marginLeft' : '25px',
+                              'backgroundColor' : 'rgba(255,255,255,0.8)',
+                              'border'          : '1px solid #ccc',
+                              'zIndex'          : '20',
+                              'top'             : '0',
+                              'width'      : '240px',
+                              'padding'    : '18px 18px 18px 18px',
+                              }
+                    ),
+
+                    # 프로그램 목록
+                   html.Div(id = 'program_data',
+                    children=[
+                       dash_table.DataTable(
+                            id="table",
+                            data=[],
+                            columns=[
+                                {'id': '프로그램명', 'name': '프로그램명'},
+                                {'id': '프로그램설명', 'name': '프로그램설명'}
+                            ],
+                            page_action='none',
+                            style_table={'height': '100%', 'overflowY': 'auto'},
+                            style_cell={'textAlign': 'left'},
+                        )
+                    ], className= 'program_data_hide',
+                    style={
+                        'position'   : 'absolute',
+                        'backgroundColor' : 'rgba(255,255,255,0.8)',
+                        'border'          : '1px solid #ccc',
+                        'zIndex'          : '20',
+                        'right'           : '0',
+                        'width'      : '20%',
+                        'padding'    : '18px 0px 18px 0px',
+                        'overflow'   : 'auto',
+                        'whiteSpace' : 'pre-line',
+                        'height'     : '90%',
+                    }),
+
+
+                    #네트워크
+                    html.Div([
+                        cyto.Cytoscape(
+                            id='cytoscape',
+                            elements=elements,
+                            layout={'name': 'cose',
+                                'idealEdgeLength': 30,
+                                'nodeRepulsion': 1000,
+                                'nodeOverlap': 30,
+                                'padding': 30,
+                                'componentSpacing': 100,
+                                    },
+                            style={'width': '90%', 'height': '75vh', 'position': 'relative'},
+                            stylesheet=stylesheet
+                            )
+                    ]),
+        ])
+    elif tab == 'tab-2':
+        return html.Div([
+            html.Iframe(src='./static/index.html',
+                        style={"width": "100%", "height": "600px"})
+        ])
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)  # automatically refresh page when code is changed
