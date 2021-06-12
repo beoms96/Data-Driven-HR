@@ -134,7 +134,7 @@ function setupGUI(config) {
 	$("#maintitle").html(logo);
 
 	// #title
-	$("#title").html("<h2>"+config.text.title+"</h2>");
+	$("#title").html("<h2>신한은행 프로젝트 관계도<br>(프로젝트 참여 기반)</h2>");
 
 	// #titletext
 	$("#titletext").html(config.text.intro);
@@ -151,21 +151,21 @@ function setupGUI(config) {
 
 	// Node
 	if (config.legend.nodeLabel) {
-		$(".node").next().html('직원개인');
+		$(".node").next().html(config.legend.nodeLabel);
 	} else {
 		//hide more information link
 		$(".node").hide();
 	}
 	// Edge
 	if (config.legend.edgeLabel) {
-		$(".edge").next().html('기술스택 기반 유사관계');
+		$(".edge").next().html(config.legend.edgeLabel);
 	} else {
 		//hide more information link
 		$(".edge").hide();
 	}
 	// Colours
 	if (config.legend.nodeLabel) {
-		$(".colours").next().html('부서구분');
+		$(".colours").next().html(config.legend.colorLabel);
 	} else {
 		//hide more information link
 		$(".colours").hide();
@@ -278,7 +278,7 @@ function configSigmaElements(config) {
     var a = [],
         b=1;
 		x =0;
-		var lab = ['정보개발부','글로벌개발부','디지털개발부','ICT운영부','ICT기획부','기관개발부','금융개발부'];
+		var lab = ['ICT기획부','정보개발부','디지털개발부','금융개발부','글로벌개발부','ICT운영부','기관개발부'];
 		for (b in sigInst.clusters) 
 		{	
 			a.push('<div style="line-height:12px"><a href="#' + b + '"><div style="width:40px;height:12px;border:1px solid #fff;background:' + b + ';display:inline-block"></div> ' + (lab[x++]) + ' (' + sigInst.clusters[b].length + '명)</a></div>');
@@ -559,25 +559,25 @@ function nodeActive(a) {
     });
     f = b.attr;
     if (f.attributes) {
-        var image_attribute = false;
-        if (config.informationPanel.imageAttribute) {
-            image_attribute=config.informationPanel.imageAttribute;
+  		var image_attribute = false;
+  		if (config.informationPanel.imageAttribute) {
+  			image_attribute=config.informationPanel.imageAttribute;
+  		}
+        e = [];
+        temp_array = [];
+        g = 0;
+		e.push('<span><strong>' + '부서명' + ':</strong> ' + f.attributes['jeom_name'] + '</span><br/>')
+        for (var attr in f.attributes) {
+            var d = f.attributes[attr],
+                h = "";
+			if (attr!=image_attribute) {
+				if (attr=='jeom_name') continue;
+				if (attr=='name') continue;
+                h = '<span><strong>' + attr + ':</strong> ' + d + '</span><br/>'
+			}
+            //temp_array.push(f.attributes[g].attr);
+            e.push(h)
         }
-      e = [];
-      temp_array = [];
-      g = 0;
-      e.push('<span><strong>' + '부서명' + ':</strong> ' + f.attributes['jeom_name'] + '</span><br/>')
-      for (var attr in f.attributes) {
-          var d = f.attributes[attr],
-              h = "";
-          if (attr!=image_attribute) {
-              if (attr=='jeom_name') continue;
-              if (attr=='name') continue;
-              h = '<span><strong>' + attr + ':</strong> ' + d + '</span><br/>'
-          }
-          //temp_array.push(f.attributes[g].attr);
-          e.push(h)
-      }
 
         if (image_attribute) {
         	//image_index = jQuery.inArray(image_attribute, temp_array);
