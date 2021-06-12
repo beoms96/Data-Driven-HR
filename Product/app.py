@@ -1,35 +1,3 @@
-'''
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-from flask import Flask, request, send_from_directory
-from dash import Dash
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from werkzeug.serving import run_simple
-import dash_html_components as html
-
-server=Flask(__name__, static_url_path='')
-dash_app=Dash(__name__, server=server, url_base_pathname='/dashboard/')
-dash_app.layout = html.Div([html.H1('Hi there, I am app1 for dashboards')])
-@server.route("/")
-def root():
-    return server.send_static_file('index.html')
-
-@server.route('/dashboard')
-def render_dashboard():
-    return flask.redirect('/dash1')
-
-app=DispatcherMiddleware(server, {
-    '/dash1':dash_app.server
-})
-
-if __name__=="__main__":
-    server.run()
-'''
-
 # -*- coding: utf-8 -*-
 
 # Run this app with `python app.py` and
@@ -40,10 +8,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_cytoscape as cyto
 from dash.dependencies import Input, Output
-import plotly.express as px
 import pandas as pd
 import os
-from extra import conversions
+from Product.src.extra import conversions
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -59,8 +26,10 @@ df = pd.read_csv(os.path.join(root, 'data_for_dash.csv'), index_col=0)
 elements = []
 
 app.layout = html.Div(children=[
-    html.H1(children='Data Driven HRM',
-            style={'textAlign': 'center'}),
+    html.Div(children=[
+        html.Img(src=app.get_asset_url('SHbank.png'), style={'height': '3%', 'width': '3%', 'display': 'inline-block'}),
+        html.H1(children='  Shinhan Data Driven HRM ', style={'display': 'inline-block'}),
+    ], style={'textAlign': 'center'}),
 
     dcc.Tabs(id='tabs', value='tab-1', children=[
         dcc.Tab(label='업무 네트워크', value='tab-1'),

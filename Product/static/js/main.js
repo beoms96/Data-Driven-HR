@@ -134,7 +134,7 @@ function setupGUI(config) {
 	$("#maintitle").html(logo);
 
 	// #title
-	$("#title").html("<h2>"+config.text.title+"</h2>");
+	$("#title").html("<h2>신한은행 프로젝트 관계도<br>(프로젝트 참여 기반)</h2>");
 
 	// #titletext
 	$("#titletext").html(config.text.intro);
@@ -581,7 +581,7 @@ function nodeActive(a) {
 
         if (image_attribute) {
         	//image_index = jQuery.inArray(image_attribute, temp_array);
-        	$GP.info_name.html("<div><img src='/images/sol_character.jpg' style=\"vertical-align:middle\" /> <span onmouseover=\"sigInst._core.plotter.drawHoverNode(sigInst._core.graph.nodesIndex['" + b.id + '\'])" onmouseout="sigInst.refresh()">' + b.label + "</span></div>");
+        	$GP.info_name.html("<div><img src='/Desktop/회사/디지테커/Product/images/sol_character.jpg' style=\"vertical-align:middle;width:30px;height:30px\" /> <span onmouseover=\"sigInst._core.plotter.drawHoverNode(sigInst._core.graph.nodesIndex['" + b.id + '\'])" onmouseout="sigInst.refresh()">' + b.label + "</span></div>");
         } else {
         	$GP.info_name.html("<div><span onmouseover=\"sigInst._core.plotter.drawHoverNode(sigInst._core.graph.nodesIndex['" + b.id + '\'])" onmouseout="sigInst.refresh()">' + b.label + "</span></div>");
         }
