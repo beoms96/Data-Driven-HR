@@ -1,0 +1,53 @@
+{
+  "type": "network",
+  "version": "1.0",
+  "data": "data2.json",
+  "logo": {
+    "file": "",
+    "link": "",
+    "text": "상상디지텍커 1기 5조"
+  },
+  "text": {
+    "more": "당행 IT 직원들의 프로젝트 참여 데이터, 사용 기술 스택을 바탕으로 관계를 정의하고 네트워크로 시각화한 그래프입니다",
+    "intro": "당행 IT 인력들의 기술 스택 기반 전체 네트워크",
+    "title": "신한은행 프로젝트 관계도(기술스택 기반)"
+  },
+  "legend": {
+    "edgeLabel": "Id",
+    "colorLabel": "jeom_name",
+    "nodeLabel": "Label"
+  },
+  "features": {
+    "search": true,
+    "groupSelectorAttribute": "jeom_name",
+    "hoverBehavior": "default"
+  },
+  "informationPanel": {
+    "groupByEdgeDirection": false,
+    "imageAttribute": false
+  },
+  "sigma": {
+    "drawingProperties": {
+      "defaultEdgeType": "curve",
+      "defaultHoverLabelBGColor": "#002147",
+      "defaultLabelBGColor": "#ddd",
+      "activeFontStyle": "bold",
+      "defaultLabelColor": "#000",
+      "labelThreshold": 10,
+      "defaultLabelHoverColor": "#fff",
+      "fontStyle": "bold",
+      "hoverFontStyle": "bold",
+      "defaultLabelSize": 14
+    },
+    "graphProperties": {
+      "maxEdgeSize": 0.5,
+      "minEdgeSize": 0.2,
+      "minNodeSize": 5,
+      "maxNodeSize": 10
+    },
+    "mouseProperties": {
+      "maxRatio": 20,
+      "minRatio": 0.75
+    }
+  }
+}
