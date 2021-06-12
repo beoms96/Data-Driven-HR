@@ -116,7 +116,7 @@ app.layout = html.Div(children=[
 
             dcc.Tab(label='업무 역량 네트워크', value='tab-2', children=[])
         ])
-    ]),
+    ], style={'width': '49%', 'display': 'inline-block'}),
 ])
 
 # --------------------------------- CALLBACKS --------------------------------    
