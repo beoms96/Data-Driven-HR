@@ -117,7 +117,7 @@ def render_content(tab):
     [dash.dependencies.Input('ibx', 'n_submit')],
     [dash.dependencies.State('ibx', 'value')]
 )
-def update_output(n_clicks, value):
+def update_output(n_clicks, n_submits, value):
     if value == "" or int(value) not in (df['JIKWON_NO'].unique()):
         return []
     selected_jikwon = int(value)
