@@ -102,6 +102,10 @@ def update_output(n_clicks, value):
     data = df[df['JIKWON_NO'] == selected_jikwon]
     selected_name = data['NAME'].unique()[0].rstrip()
 
+    program_edge = data.drop_duplicates(['A', '프로그램종류'])[['A', '프로그램종류']]
+    program_edge['Counts'] =program_edge.groupby(['A'])['프로그램종류'].transform('count')
+    program_edge = program_edge[program_edge['Counts'] != 1]
+
     # create nodes
     elements=[]
     # -- Jikwon Node
@@ -117,7 +121,7 @@ def update_output(n_clicks, value):
                          'size': data[data["A"] == name]["A"].count() / data_max * MAX_NODE_SIZE + MIN_NODE_SIZE},
                          'classes': 'A'})
 
-    for name in list(data['프로그램종류'].unique()):
+    for name in list(program_edge['프로그램종류'].unique()):
         elements.append({'data': {'id': name, 'label': name, 
                          'size': data[data["프로그램종류"] == name]["프로그램종류"].count() / data_max * MAX_NODE_SIZE + MIN_NODE_SIZE},
                          'classes': 'program'})
@@ -125,8 +129,8 @@ def update_output(n_clicks, value):
     # create edges
     for t in list(data['A'].unique()):
         elements.append({'data': {'source': selected_name, 'target': t}})
-
-    for f, t in zip(list(data['A']), list(data['프로그램종류'])):
+    
+    for f, t in zip(list(program_edge['A']), list(program_edge['프로그램종류'])):
         elements.append({'data': {'source': f, 'target': t}})
     
     return elements
