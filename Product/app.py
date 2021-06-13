@@ -211,6 +211,16 @@ def update_program_output(n_clicks, data, n_submits, value):
         return []
 
     return  html.Div([
+        html.H2(
+            children = data['label'] + " 프로그램 목록",
+            style = {
+                'margin'        : '5px',
+                'paddingBottom': '10px',
+                'fontSize'     : '14px',
+                'fontWeight'   : 'bold',
+                'color'         : '#000'
+            }
+        ),
         dash_table.DataTable(
                         id="table",
                         data=jikwon_program.to_dict('records'),
