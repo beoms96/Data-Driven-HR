@@ -13,7 +13,8 @@ import dash_table
 import pandas as pd
 import os
 
-from src.extra import conversions
+
+from Product.src.extra import conversions
 
 # ################################ STYLESHEET ################################
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -93,7 +94,6 @@ stylesheet.append({'selector': '.program',
                        'background-image': 'data(url)',
                    }
                    })
-
 
 # --------------------------------- CALLBACKS --------------------------------
 # 행번 입력 후 조회버튼 클릭 -> node, edge 생성
@@ -281,7 +281,7 @@ def update_program_output(n_clicks, data, n_submits, value):
         
     )
 
-        
+       
 
 
 # ################################### TAB2 ###################################
@@ -358,7 +358,7 @@ def render_content(tab):
                             'color': '#000'
                         }
                     ),
-
+                  
                     # 직원 정보
                     html.Div([
                         html.H2(
@@ -427,8 +427,7 @@ def render_content(tab):
                 ),
 
                 # 프로그램 목록
-                html.Div(id = 'program_data', 
-                         children=[]),
+                html.Div(id = 'program_data', children=[]),
 
                 # 네트워크
                 html.Div([
