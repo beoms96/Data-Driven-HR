@@ -13,6 +13,7 @@ import dash_table
 import pandas as pd
 import os
 
+
 from Product.src.extra import conversions
 
 # ################################ STYLESHEET ################################
@@ -93,7 +94,6 @@ stylesheet.append({'selector': '.program',
                        'background-image': 'data(url)',
                    }
                    })
-
 
 # --------------------------------- CALLBACKS --------------------------------
 # 행번 입력 후 조회버튼 클릭 -> node, edge 생성
@@ -211,42 +211,77 @@ def update_program_output(n_clicks, data, n_submits, value):
         return []
 
     return  html.Div([
-        html.H2(
-            children = data['label'] + " 프로그램 목록",
+
+        html.Div([
+            
+            # Return to the full network 문구 왼쪽에 위치한 버튼과 이미지 컴포넌트
+            html.Button(
+                [html.Img(src='/assets/fancybox_sprite.png', style={'height': '30px', 'width': '30px', 'display': 'inline-block', 'position' : 'absolute', 'left' : '-6px'})], 
+                id='return btn', 
+                style={'display': 'contents'}
+            ),
+
+            html.H2(
+                children = "Return to the full network",
+                style = {
+                    'margin'        : '5px',
+                    'marginBottom'  : '10px',
+                    'paddingBottom' : '10px',
+                    'fontSize'      : '16px',
+                    'fontWeight'    : 'bold',
+                    'color'         : '#000'
+                }
+            ),
+            
+            html.H2(
+                children = data['label'] + " 프로그램 목록",
+                style = {
+                    'margin'        : '5px',
+                    'marginBottom'  : '10px',
+                    'paddingBottom' : '10px',
+                    'fontSize'      : '16px',
+                    'fontWeight'    : 'bold',
+                    'color'         : '#000',
+                    'border-bottom' : '1px solid #999'
+                }
+            ),
+            
+            dash_table.DataTable(
+                            id="table",
+                            data=jikwon_program.to_dict('records'),
+                            columns=[
+                                {'id': '프로그램명', 'name': '프로그램명'},
+                                {'id': '프로그램설명', 'name': '프로그램설명'}
+                            ],
+                            page_action='none',
+                            style_table={'height': '100%', 'width' : '100%', 'overflowY': 'auto', 'overflowX': 'scroll'},
+                            style_cell={'textAlign': 'left'}, 
+                        )
+            ],
             style = {
-                'margin'        : '5px',
-                'paddingBottom': '10px',
-                'fontSize'     : '14px',
-                'fontWeight'   : 'bold',
-                'color'         : '#000'
+                'width'         : '244px',
+                'padding'       : '0px 18px 0px 18px',
             }
-        ),
-        dash_table.DataTable(
-                        id="table",
-                        data=jikwon_program.to_dict('records'),
-                        columns=[
-                            {'id': '프로그램명', 'name': '프로그램명'},
-                            {'id': '프로그램설명', 'name': '프로그램설명'}
-                        ],
-                        page_action='none',
-                        style_table={'height': '100%', 'overflowY': 'auto'},
-                        style_cell={'textAlign': 'left'},
-                    )
-                ],
-                style={
-                    'position': 'absolute',
-                    'backgroundColor': 'rgba(255,255,255,0.8)',
-                    'border': '1px solid #ccc',
-                    'zIndex': '20',
-                    'right': '0',
-                    'width': '20%',
-                    'marginTop': '50px',
-                    'marginRight': '25px',
-                    'padding': '18px 0px 18px 0px',
-                    'overflow': 'auto',
-                    'whiteSpace': 'pre-line',
-                    'height': '80%',
-                })
+        )],
+
+        style={
+            'position': 'absolute',
+            'backgroundColor': 'rgba(255,255,255,0.8)',
+            'border': '1px solid #ccc',
+            'zIndex': '20',
+            'right': '0',
+            #'width': '277px',
+            'marginTop': '50px',
+            'marginRight': '25px',
+            'padding': '0px 0px 18px 0px',
+            'overflow': 'auto',
+            'whiteSpace': 'pre-line',
+            'height': '80%',
+        }
+        
+    )
+
+       
 
 
 # ################################### TAB2 ###################################
@@ -323,7 +358,7 @@ def render_content(tab):
                             'color': '#000'
                         }
                     ),
-
+                  
                     # 직원 정보
                     html.Div([
                         html.H2(
@@ -341,6 +376,7 @@ def render_content(tab):
                                  children='',
                                  style={'whiteSpace': 'pre-line',
                                         'paddingBottom': '10px',
+                                        'lineHeight' : '20px'
                                         })
 
                     ]),
