@@ -210,14 +210,15 @@ def update_program_output(n_clicks, data, n_submits, value):
     
     if button_id == 'btn' or button_id == 'ibx':
         return []
-
+      
     selected_jikwon = int(value)
-    jikwon_program = df[df['JIKWON_NO'] == selected_jikwon]
+    selected_jikwon_data = df[df['JIKWON_NO'] == selected_jikwon]
+    jikwon_program = selected_jikwon_data.drop_duplicates(['프로그램명'])
 
     if data['label'] in (df['A'].unique()):
-        jikwon_program = jikwon_program[['프로그램명', '프로그램설명']][jikwon_program['A'] == data['label']]
+        jikwon_program = jikwon_program[['프로그램명', '프로그램설명']][jikwon_program['A'] == data['label']].sort_values(by='프로그램명')
     elif data['label'] in (df['프로그램종류'].unique()):
-        jikwon_program = jikwon_program[['프로그램명', '프로그램설명']][jikwon_program['프로그램종류'] == data['label']]
+        jikwon_program = jikwon_program[['프로그램명', '프로그램설명']][jikwon_program['프로그램종류'] == data['label']].sort_values(by='프로그램명')
     else:
         return []
 
