@@ -185,7 +185,7 @@ def update_jikwon_output(n_clicks, n_submits, value):
 
 # 노드 클릭시 해당하는 프로그램 목록 표시
 @app.callback(
-    dash.dependencies.Output('table', 'data'),
+    dash.dependencies.Output('program_data', 'children'),
     [dash.dependencies.Input('btn', 'n_clicks')],
     [dash.dependencies.Input('cytoscape', 'tapNodeData')],
     [dash.dependencies.Input('ibx', 'n_submit')],
@@ -196,25 +196,47 @@ def update_program_output(n_clicks, data, n_submits, value):
         return []
     else:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-    if button_id == 'btn':
+    
+    if button_id == 'btn' or button_id == 'ibx':
         return []
 
     selected_jikwon = int(value)
     jikwon_program = df[df['JIKWON_NO'] == selected_jikwon]
 
     if data['label'] in (df['A'].unique()):
-        jikwon_program = jikwon_program['프로그램명', '프로그램설명'][jikwon_program['A'] == data['label']]
+        jikwon_program = jikwon_program[['프로그램명', '프로그램설명']][jikwon_program['A'] == data['label']]
     elif data['label'] in (df['프로그램종류'].unique()):
-        jikwon_program = jikwon_program['프로그램명', '프로그램설명'][jikwon_program['프로그램종류'] == data['label']]
+        jikwon_program = jikwon_program[['프로그램명', '프로그램설명']][jikwon_program['프로그램종류'] == data['label']]
     else:
         return []
 
-    output_program = data['label'] + " 프로그램 목록 \n\n"
-    for p in jikwon_program:
-        output_program = output_program + p + '\n'
-
-    return jikwon_program.to_dict('records')
+    return  html.Div([
+        dash_table.DataTable(
+                        id="table",
+                        data=jikwon_program.to_dict('records'),
+                        columns=[
+                            {'id': '프로그램명', 'name': '프로그램명'},
+                            {'id': '프로그램설명', 'name': '프로그램설명'}
+                        ],
+                        page_action='none',
+                        style_table={'height': '100%', 'overflowY': 'auto'},
+                        style_cell={'textAlign': 'left'},
+                    )
+                ],
+                style={
+                    'position': 'absolute',
+                    'backgroundColor': 'rgba(255,255,255,0.8)',
+                    'border': '1px solid #ccc',
+                    'zIndex': '20',
+                    'right': '0',
+                    'width': '20%',
+                    'marginTop': '50px',
+                    'marginRight': '25px',
+                    'padding': '18px 0px 18px 0px',
+                    'overflow': 'auto',
+                    'whiteSpace': 'pre-line',
+                    'height': '80%',
+                })
 
 
 # ################################### TAB2 ###################################
@@ -359,34 +381,7 @@ def render_content(tab):
                 ),
 
                 # 프로그램 목록
-                html.Div(id='program_data',
-                         children=[
-                             dash_table.DataTable(
-                                 id="table",
-                                 data=[],
-                                 columns=[
-                                     {'id': '프로그램명', 'name': '프로그램명'},
-                                     {'id': '프로그램설명', 'name': '프로그램설명'}
-                                 ],
-                                 page_action='none',
-                                 style_table={'height': '100%', 'overflowY': 'auto'},
-                                 style_cell={'textAlign': 'left'},
-                             )
-                         ], className='program_data_hide',
-                         style={
-                             'position': 'absolute',
-                             'backgroundColor': 'rgba(255,255,255,0.8)',
-                             'border': '1px solid #ccc',
-                             'zIndex': '20',
-                             'right': '0',
-                             'width': '20%',
-                             'marginTop': '50px',
-                             'marginRight': '25px',
-                             'padding': '18px 0px 18px 0px',
-                             'overflow': 'auto',
-                             'whiteSpace': 'pre-line',
-                             'height': '80%',
-                         }),
+                html.Div(id = 'program_data', children=[]),
 
                 # 네트워크
                 html.Div([
