@@ -449,7 +449,7 @@ def render_content(tab):
     elif tab == 'tab-2':
         return html.Div([
             html.Iframe(src='./static/index.html',
-                        style={"width": "100%", "height": "600px"})
+                        style={"width": "100%", "height": "580px"})
         ])
 
 
