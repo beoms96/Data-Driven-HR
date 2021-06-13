@@ -8,13 +8,10 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_cytoscape as cyto
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, ALL
 import dash_table
 import pandas as pd
 import os
-
-
-#from Product.src.extra import conversions
 from src.extra import conversions
 
 # ################################ STYLESHEET ################################
@@ -160,6 +157,17 @@ def update_output(n_clicks, n_submits, value):
 
     return elements
 
+# 엑스 이미지 클릭 시 오른쪽 섹션 닫기
+@app.callback(
+    dash.dependencies.Output('program_data2', 'children'),
+    dash.dependencies.Output('program_data2', 'style'),
+    [dash.dependencies.Input('close_btn', 'n_clicks')],
+    [dash.dependencies.State('program_data2', 'children')],
+    [dash.dependencies.State('program_data2', 'style')])
+def close_program_output(n_clicks, children, style):
+    if (n_clicks is None ) :
+        return children, style
+    return None, {'display' : 'none'}
 
 # 행번 입력 후 조회버튼 클릭 -> 직원정보 출력
 @app.callback(
@@ -192,7 +200,9 @@ def update_jikwon_output(n_clicks, n_submits, value):
     [dash.dependencies.Input('ibx', 'n_submit')],
     [dash.dependencies.State('ibx', 'value')])
 def update_program_output(n_clicks, data, n_submits, value):
+    
     ctx = dash.callback_context
+    
     if not ctx.triggered:
         return []
     else:
@@ -211,14 +221,14 @@ def update_program_output(n_clicks, data, n_submits, value):
     else:
         return []
 
-    return  html.Div([
+    return  html.Div(id = 'program_data2', children=[
 
         html.Div([
             
             # Return to the full network 문구 왼쪽에 위치한 버튼과 이미지 컴포넌트
             html.Button(
-                [html.Img(src='/assets/fancybox_sprite.png', style={'height': '30px', 'width': '30px', 'display': 'inline-block', 'position' : 'absolute', 'left' : '-6px'})], 
-                id='return btn', 
+                [html.Img(id='close_btn', src='/assets/fancybox_sprite.png', style={'height': '30px', 'width': '30px', 'display': 'inline-block', 'position' : 'absolute', 'left' : '-6px'})], 
+                 
                 style={'display': 'contents'}
             ),
 
@@ -243,7 +253,7 @@ def update_program_output(n_clicks, data, n_submits, value):
                     'fontSize'      : '16px',
                     'fontWeight'    : 'bold',
                     'color'         : '#000',
-                    'border-bottom' : '1px solid #999'
+                    'borderBottom' : '1px solid #999'
                 }
             ),
             
@@ -290,17 +300,17 @@ def update_program_output(n_clicks, data, n_submits, value):
 # ################################# LAYOUT ###################################
 app.layout = html.Div(children=[
     html.Div(children=[
-        html.Img(src=app.get_asset_url('SHbank.png'), style={'height': '3%', 'width': '3%', 'display': 'inline-block'}),
-        html.H1(children='  Shinhan Data Driven HRM ', style={'display': 'inline-block'}),
+        html.Img(src=app.get_asset_url('SHbank.png'), style={'height': '3%', 'width': '3%', 'display': 'inlineBlock'}),
+        html.H1(children='  Shinhan Data Driven HRM ', style={'display': 'inlineBlock'}),
     ], style={'textAlign': 'center'}),
 
     dcc.Tabs(id='tabs', children=[
         dcc.Tab(label='기술 역량 네트워크', value='tab-1', children=[]),
         dcc.Tab(label='업무 역량 네트워크', value='tab-2', children=[])
-    ], style={'margin-left': 50, 'margin-right': 50}),
+    ], style={'marginLeft': 50, 'marginRight': 50}),
 
     html.Div(id='tabs-content',
-             style={'margin-left': 50, 'margin-right': 50}),
+             style={'marginLeft': 50, 'marginRight': 50}),
 ])
 
 
