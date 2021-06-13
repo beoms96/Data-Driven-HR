@@ -14,7 +14,8 @@ import pandas as pd
 import os
 
 
-from Product.src.extra import conversions
+#from Product.src.extra import conversions
+from src.extra import conversions
 
 # ################################ STYLESHEET ################################
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
