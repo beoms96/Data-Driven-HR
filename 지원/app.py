@@ -24,6 +24,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets, suppress_ca
 root = os.path.join(os.getcwd(), './data')
 df = pd.read_csv(os.path.join(root, 'data_for_dash2.csv'), index_col=0, encoding='UTF8')
 df_jikwon = pd.read_csv(os.path.join(root, 'jikwon.csv'), index_col=0, encoding='cp949')
+jikwon_code = pd.read_csv(os.path.join(root, 'jikwon_code.csv'), index_col=0, encoding='cp949')
 elements, stylesheet = [], []
 
 MAX_NODE_SIZE = 40  # 최대 node 사이즈 (50)
@@ -101,11 +102,11 @@ stylesheet.append({'selector': '.program',
     [dash.dependencies.Input('ibx', 'n_submit')],
     [dash.dependencies.State('ibx', 'value')])
 def update_output(n_clicks, n_submits, value):
-    if value == "" or str(value) not in (df['NAME'].str.rstrip().unique()):  # 검색한 직원이 없거나 존재하지 않는 경우
+    if value == "" or str(value) not in (jikwon_code['NAME'].str.rstrip().unique()):  # 검색한 직원이 없거나 존재하지 않는 경우
         return []
     
     # Set Jikwon info
-    selected_jikwon = int(df['JIKWON_NO'][df['NAME'].str.rstrip() == str(value)].unique())
+    selected_jikwon = int(jikwon_code['JIKWON_NO'][jikwon_code['NAME'].str.rstrip() == str(value)].unique())
     data = df[df['JIKWON_NO'] == selected_jikwon]
     selected_name = str(value)
 
@@ -176,10 +177,10 @@ def close_program_output(n_clicks, children, style):
     [dash.dependencies.Input('ibx', 'n_submit')],
     [dash.dependencies.State('ibx', 'value')])
 def update_jikwon_output(n_clicks, n_submits, value):
-    if value == "" or str(value) not in (df['NAME'].str.rstrip().unique()):  # 검색한 직원이 없거나 존재하지 않는 경우
+    if value == "" or str(value) not in (jikwon_code['NAME'].str.rstrip().unique()):  # 검색한 직원이 없거나 존재하지 않는 경우
         return "해당하는 직원정보가 없습니다."
     
-    selected_jikwon = int(df['JIKWON_NO'][df['NAME'].str.rstrip() == str(value)].unique())
+    selected_jikwon = int(jikwon_code['JIKWON_NO'][jikwon_code['NAME'].str.rstrip() == str(value)].unique())
     data = df_jikwon.loc[selected_jikwon]
 
     output_jikwon = "이름: " + data['NAME'] + "\n"
@@ -211,7 +212,7 @@ def update_program_output(n_clicks, data, n_submits, value):
     if button_id == 'btn' or button_id == 'ibx':
         return []
 
-    selected_jikwon = int(df['JIKWON_NO'][df['NAME'].str.rstrip() == str(value)].unique())
+    selected_jikwon = int(jikwon_code['JIKWON_NO'][jikwon_code['NAME'].str.rstrip() == str(value)].unique())
     selected_jikwon_data = df[df['JIKWON_NO'] == selected_jikwon]
     jikwon_program = selected_jikwon_data.drop_duplicates(['프로그램명'])
 
