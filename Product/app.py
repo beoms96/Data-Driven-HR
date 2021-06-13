@@ -229,9 +229,10 @@ app.layout = html.Div(children=[
     dcc.Tabs(id='tabs', children=[
         dcc.Tab(label='기술 역량 네트워크', value='tab-1', children=[]),
         dcc.Tab(label='업무 역량 네트워크', value='tab-2', children=[])
-    ]),
+    ], style={'margin-left': 50, 'margin-right': 50}),
 
-    html.Div(id='tabs-content'),
+    html.Div(id='tabs-content',
+             style={'margin-left': 50, 'margin-right': 50}),
 ])
 
 
@@ -379,10 +380,12 @@ def render_content(tab):
                              'zIndex': '20',
                              'right': '0',
                              'width': '20%',
+                             'marginTop': '50px',
+                             'marginRight': '25px',
                              'padding': '18px 0px 18px 0px',
                              'overflow': 'auto',
                              'whiteSpace': 'pre-line',
-                             'height': '90%',
+                             'height': '80%',
                          }),
 
                 # 네트워크
