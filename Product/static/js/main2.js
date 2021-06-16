@@ -566,14 +566,24 @@ function nodeActive(a) {
       e = [];
       temp_array = [];
       g = 0;
-      e.push('<span><strong>' + '부서명' + ':</strong> ' + f.attributes['jeom_name'] + '</span><br/>')
+      e.push('<span><strong>' + '부서명' + ':</strong> ' + f.attributes['Modularity Class'] + '</span><br/>')
       for (var attr in f.attributes) {
           var d = f.attributes[attr],
               h = "";
           if (attr!=image_attribute) {
               if (attr=='jeom_name') continue;
               if (attr=='name') continue;
-              h = '<span><strong>' + attr + ':</strong> ' + d + '</span><br/>'
+              if (attr=='Modularity Class') continue;
+              if (attr=='Closeness Centrality') continue;
+              if (attr=='Eigenvector Centrality') continue;
+              if (attr =='Clustering Coefficient') continue;
+              if (attr == 'Harmonic Closeness Centrality') continue;
+              if (attr == 'Weighted Degree') continue;
+              if (attr =='Number of triangles') continue;
+              if (attr == 'Eccentricity') attr = attr+'(타 직원과의 거리 중 최대)';
+              if (attr == 'Degree') attr = attr+'(연결된 직원 수)';
+              if (attr == 'Betweenness Centrality') attr = attr+'<br>(타 직원들 사이 연결고리 정도)';
+              h = '<span><strong>' + attr + '</strong><br> ' + d + '</span><br/>'
           }
           //temp_array.push(f.attributes[g].attr);
           e.push(h)
