@@ -294,10 +294,6 @@ def update_program_output(n_clicks, data, n_submits, value):
         
     )
 
-       
-
-
-# ################################### TAB2 ###################################
 
 # ################################# LAYOUT ###################################
 app.layout = html.Div(children=[
@@ -308,7 +304,7 @@ app.layout = html.Div(children=[
 
     dcc.Tabs(id='tabs', children=[
         dcc.Tab(label='기술 역량 네트워크', value='tab-1', children=[]),
-        dcc.Tab(label='업무 역량 네트워크', value='tab-2', children=[])
+        dcc.Tab(label='직원 관계도 네트워크', value='tab-2', children=[])
     ], style={'marginLeft': 50, 'marginRight': 50}),
 
     html.Div(id='tabs-content',
